@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ContentOS v3 — Pranav's Creator Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Satoshi:wght@300;400;500;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#07070d;--s1:#0f0f18;--s2:#161620;--s3:#1e1e2a;--border:rgba(255,255,255,0.07);--text:#e4e2f0;--muted:#5e5c72;--dim:#3a3850;--orange:#ff5c1a;--cyan:#00ccff;--green:#00e87a;--purple:#b06cff;--yellow:#ffc93c;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Satoshi',sans-serif;font-size:15px;line-height:1.6;min-height:100vh;overflow-x:hidden;}
+::-webkit-scrollbar{width:4px;height:4px;}::-webkit-scrollbar-track{background:var(--s1);}::-webkit-scrollbar-thumb{background:var(--dim);border-radius:2px;}
+
+.app{display:grid;grid-template-columns:240px 1fr;grid-template-rows:58px 1fr;height:100vh;overflow:hidden;}
+
+/* TOPBAR */
+.topbar{grid-column:1/-1;background:var(--s1);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:20px;z-index:100;}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;letter-spacing:-0.5px;display:flex;align-items:center;gap:8px;}
+.logo-dot{width:8px;height:8px;border-radius:50%;background:var(--orange);animation:pulse 2s infinite;}
+.logo span{color:var(--orange);}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.5;transform:scale(0.8);}}
+.topbar-center{flex:1;display:flex;justify-content:center;}
+.steps-row{display:flex;align-items:center;gap:0;}
+.sp{display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);border:1px solid transparent;transition:all 0.3s;white-space:nowrap;}
+.sp.done{color:var(--green);border-color:rgba(0,232,122,0.2);background:rgba(0,232,122,0.05);}
+.sp.active{color:var(--orange);border-color:rgba(255,92,26,0.3);background:rgba(255,92,26,0.08);}
+.sp .dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.sp-arr{color:var(--dim);font-size:0.65rem;padding:0 2px;}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.ai-badge{font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;background:rgba(0,232,122,0.08);color:var(--green);border:1px solid rgba(0,232,122,0.2);display:flex;align-items:center;gap:6px;}
+.ai-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+
+/* SIDEBAR */
+.sidebar{background:var(--s1);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.sidebar-top{padding:20px 16px 8px;flex:1;overflow-y:auto;}
+.slabel{font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--dim);padding:6px 10px;display:block;margin-bottom:2px;}
+.nbtn{display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;border-radius:4px;border:none;background:none;color:var(--muted);font-family:'Satoshi',sans-serif;font-size:0.84rem;font-weight:500;cursor:pointer;transition:all 0.15s;text-align:left;}
+.nbtn:hover{background:var(--s2);color:var(--text);}
+.nbtn.active{background:rgba(255,92,26,0.1);color:var(--orange);}
+.ni{font-size:0.85rem;width:20px;text-align:center;flex-shrink:0;}
+.nbadge{margin-left:auto;background:var(--s3);color:var(--muted);font-family:'DM Mono',monospace;font-size:0.58rem;padding:1px 7px;border-radius:10px;}
+.nbtn.active .nbadge{background:rgba(255,92,26,0.15);color:var(--orange);}
+.sdiv{height:1px;background:var(--border);margin:10px 16px;}
+.sidebar-bottom{padding:16px;border-top:1px solid var(--border);}
+.clabel{font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--dim);display:block;margin-bottom:5px;}
+.cinput{width:100%;background:var(--s2);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:0.7rem;padding:7px 10px;border-radius:3px;outline:none;transition:border 0.2s;margin-bottom:10px;}
+.cinput:focus{border-color:rgba(255,92,26,0.4);}
+.cinput::placeholder{color:var(--dim);}
+
+/* THEME BADGE in sidebar */
+.theme-badge{background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.3);border-radius:3px;padding:8px 12px;margin-top:4px;}
+.theme-badge-label{font-family:'DM Mono',monospace;font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(201,168,76,0.7);margin-bottom:4px;}
+.theme-badge-name{font-family:'Syne',sans-serif;font-weight:700;font-size:0.78rem;color:#c9a84c;}
+.theme-badge-note{font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--muted);margin-top:3px;line-height:1.4;}
+
+/* MAIN */
+.main{overflow-y:auto;background:var(--bg);}
+.panel{display:none;padding:28px 32px;animation:fadeUp 0.25s ease both;}
+.panel.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+.ph{margin-bottom:24px;}
+.ph-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;letter-spacing:-0.5px;line-height:1.2;margin-bottom:4px;}
+.ph-title em{font-style:normal;color:var(--orange);}
+.ph-sub{font-size:0.82rem;color:var(--muted);}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px;}
+.stat{background:var(--s1);border:1px solid var(--border);border-radius:3px;padding:14px 16px;}
+.sn{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;line-height:1;margin-bottom:2px;}
+.sl{font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;}
+
+/* IDEA BOX */
+.ibox{background:var(--s1);border:1.5px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:16px;transition:border-color 0.3s;}
+.ibox:focus-within{border-color:rgba(255,92,26,0.4);}
+.ihead{padding:12px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.ihead-l{font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;display:flex;align-items:center;gap:8px;}
+.ihead-l::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--orange);}
+textarea.idea{width:100%;background:transparent;border:none;color:var(--text);font-family:'Satoshi',sans-serif;font-size:0.95rem;padding:18px;resize:none;outline:none;line-height:1.75;min-height:110px;}
+textarea.idea::placeholder{color:var(--dim);}
+.ifoot{padding:10px 18px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.ihint{font-size:0.75rem;color:var(--dim);}
+
+/* SETTINGS */
+.settings{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
+.sg{background:var(--s1);border:1px solid var(--border);border-radius:3px;padding:12px 14px;}
+.sg label{font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:7px;}
+select.sel{width:100%;background:var(--s2);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:0.7rem;padding:6px 8px;border-radius:3px;outline:none;cursor:pointer;}
+
+/* SCHEDULE NOTICE */
+.schedule-notice{background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.2);border-radius:4px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:flex-start;gap:12px;}
+.sn-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px;}
+.sn-title{font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;margin-bottom:3px;color:#c9a84c;}
+.sn-text{font-size:0.78rem;color:var(--muted);line-height:1.55;}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:4px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.8rem;cursor:pointer;border:none;transition:all 0.2s;white-space:nowrap;}
+.btn:disabled{opacity:0.4;cursor:not-allowed;transform:none!important;}
+.btn-primary{background:var(--orange);color:#fff;}
+.btn-primary:not(:disabled):hover{background:#ff7040;transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border);}
+.btn-ghost:hover{background:var(--s2);color:var(--text);}
+.btn-green{background:rgba(0,232,122,0.1);color:var(--green);border:1px solid rgba(0,232,122,0.2);}
+.btn-green:hover{background:rgba(0,232,122,0.18);}
+.btn-cyan{background:rgba(0,204,255,0.08);color:var(--cyan);border:1px solid rgba(0,204,255,0.2);}
+.btn-cyan:hover{background:rgba(0,204,255,0.16);}
+.btn-purple{background:rgba(176,108,255,0.08);color:var(--purple);border:1px solid rgba(176,108,255,0.2);}
+.btn-purple:hover{background:rgba(176,108,255,0.16);}
+.btn-gold{background:rgba(201,168,76,0.1);color:#c9a84c;border:1px solid rgba(201,168,76,0.3);}
+.btn-gold:hover{background:rgba(201,168,76,0.18);}
+.btn-sm{padding:6px 12px;font-size:0.72rem;}
+.btn-xs{padding:4px 9px;font-size:0.66rem;}
+
+/* LOADER */
+.loader{display:none;padding:48px 24px;text-align:center;}
+.loader.on{display:flex;flex-direction:column;align-items:center;gap:20px;}
+.spinner{width:36px;height:36px;border:2px solid var(--border);border-top-color:var(--orange);border-radius:50%;animation:spin 0.75s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.lsteps{display:grid;gap:8px;text-align:left;}
+.ls{font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--dim);display:flex;align-items:center;gap:10px;transition:color 0.3s;}
+.ls::before{content:'○';font-size:0.55rem;flex-shrink:0;}
+.ls.on{color:var(--orange);}
+.ls.on::before{content:'◉';animation:pulse 1s infinite;}
+.ls.ok{color:var(--green);}
+.ls.ok::before{content:'✓';}
+
+/* SUCCESS BANNER */
+.sbanner{display:none;background:rgba(0,232,122,0.05);border:1px solid rgba(0,232,122,0.2);border-radius:4px;padding:14px 18px;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:16px;}
+.sbanner.on{display:flex;}
+
+/* OUTPUT AREA */
+.owrap{background:var(--s1);border:1px solid var(--border);border-radius:4px;overflow:hidden;}
+.otabs{display:flex;border-bottom:1px solid var(--border);}
+.otab{background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.08em;text-transform:uppercase;padding:9px 16px;cursor:pointer;transition:all 0.2s;margin-bottom:-1px;}
+.otab:hover{color:var(--text);}
+.otab.active{color:var(--orange);border-bottom-color:var(--orange);}
+.otbar{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.otbar .sp2{flex:1;}
+iframe.preview{width:100%;height:500px;border:none;background:white;}
+.codeview{font-family:'DM Mono',monospace;font-size:0.73rem;line-height:1.85;white-space:pre-wrap;padding:20px;max-height:500px;overflow-y:auto;color:#a8c0cc;}
+.textview{font-family:'Satoshi',sans-serif;font-size:0.9rem;line-height:1.85;padding:20px;max-height:500px;overflow-y:auto;white-space:pre-wrap;}
+
+/* DEPLOY */
+.depwrap{padding:24px;}
+.dep-steps{display:flex;flex-direction:column;gap:2px;}
+.dstep{background:var(--s2);padding:14px 16px;display:flex;align-items:flex-start;gap:14px;}
+.dnum{width:24px;height:24px;background:var(--orange);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:0.62rem;flex-shrink:0;margin-top:1px;}
+.dstep h4{font-size:0.82rem;font-weight:700;margin-bottom:3px;}
+.dstep p{font-size:0.75rem;color:var(--muted);margin-bottom:7px;}
+.cmd{background:var(--bg);border:1px solid var(--border);border-radius:3px;padding:7px 12px;font-family:'DM Mono',monospace;font-size:0.7rem;color:var(--cyan);display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.cmd span{word-break:break-all;}
+
+/* REEL */
+.reel-hook{background:rgba(255,92,26,0.07);border:1px solid rgba(255,92,26,0.2);border-radius:3px;padding:14px 18px;margin-bottom:12px;}
+.rh-label{font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--orange);margin-bottom:6px;}
+.rh-text{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;}
+.rscene{background:var(--s2);border-left:3px solid var(--orange);padding:13px 16px;margin-bottom:6px;border-radius:0 3px 3px 0;}
+.rs-head{font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--orange);margin-bottom:6px;}
+.rs-vo{font-size:0.85rem;line-height:1.6;margin-bottom:5px;}
+.rs-vis{font-size:0.75rem;color:var(--cyan);font-style:italic;}
+.rcta{background:rgba(0,232,122,0.05);border:1px solid rgba(0,232,122,0.15);border-radius:3px;padding:12px 18px;margin-top:8px;}
+.rcta-l{font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--green);margin-bottom:5px;}
+.capbox{margin-top:14px;background:var(--s1);border:1px solid var(--border);border-radius:3px;padding:14px 18px;}
+.cap-l{font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.rtip{background:rgba(0,204,255,0.04);border:1px solid rgba(0,204,255,0.15);border-radius:3px;padding:10px 14px;margin-bottom:14px;font-size:0.78rem;color:var(--muted);}
+
+/* LINKEDIN */
+.li-scores{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;}
+.liscore{background:var(--s1);border:1px solid var(--border);border-radius:3px;padding:12px;text-align:center;}
+.lisn{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;line-height:1;margin-bottom:3px;}
+.lisl{font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;}
+
+/* HISTORY */
+.hlist{display:flex;flex-direction:column;gap:8px;}
+.hcard{background:var(--s1);border:1px solid var(--border);border-radius:4px;padding:16px 18px;display:grid;grid-template-columns:1fr auto;gap:12px;cursor:pointer;transition:border-color 0.2s;}
+.hcard:hover{border-color:rgba(255,92,26,0.25);}
+.hcard.lipick{border-left:3px solid var(--purple);}
+.htitle{font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;margin-bottom:5px;}
+.hmeta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:5px;}
+.hdate{font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--muted);}
+.chip{font-family:'DM Mono',monospace;font-size:0.55rem;letter-spacing:0.08em;text-transform:uppercase;padding:2px 7px;border-radius:2px;border:1px solid;}
+.chip-b{color:var(--cyan);border-color:rgba(0,204,255,0.2);background:rgba(0,204,255,0.05);}
+.chip-r{color:var(--orange);border-color:rgba(255,92,26,0.2);background:rgba(255,92,26,0.05);}
+.chip-l{color:var(--purple);border-color:rgba(176,108,255,0.2);background:rgba(176,108,255,0.05);}
+.hidea{font-size:0.75rem;color:var(--muted);line-height:1.5;}
+.hactions{display:flex;gap:5px;align-items:flex-start;flex-wrap:wrap;}
+
+/* EMPTY */
+.empty{padding:56px;text-align:center;color:var(--muted);}
+.ei{font-size:2.2rem;opacity:0.35;margin-bottom:12px;}
+.empty h3{font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:700;color:var(--dim);margin-bottom:6px;}
+.empty p{font-size:0.78rem;max-width:260px;margin:0 auto;line-height:1.6;}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--s2);border:1px solid var(--border);padding:10px 16px;border-radius:4px;font-size:0.8rem;z-index:9999;transform:translateY(50px);opacity:0;transition:all 0.3s;pointer-events:none;display:flex;align-items:center;gap:8px;}
+.toast.on{transform:translateY(0);opacity:1;}
+.toast.ok{border-color:rgba(0,232,122,0.3);}
+.toast.err{border-color:rgba(255,68,102,0.3);}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="logo"><div class="logo-dot"></div>Content<span>OS</span></div>
+  <div class="topbar-center">
+    <div class="steps-row">
+      <div class="sp" id="sp1"><div class="dot"></div>Idea</div>
+      <div class="sp-arr">›</div>
+      <div class="sp" id="sp2"><div class="dot"></div>Blog</div>
+      <div class="sp-arr">›</div>
+      <div class="sp" id="sp3"><div class="dot"></div>Reel</div>
+      <div class="sp-arr">›</div>
+      <div class="sp" id="sp4"><div class="dot"></div>LinkedIn</div>
+      <div class="sp-arr">›</div>
+      <div class="sp" id="sp5"><div class="dot"></div>Deploy</div>
+    </div>
+  </div>
+  <div class="topbar-right"><div class="ai-badge">AI Live</div></div>
+</header>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-top">
+    <span class="slabel">Workflow</span>
+    <button class="nbtn active" onclick="nav('create')"><span class="ni">✦</span>Create<span class="nbadge" id="nb-c">New</span></button>
+    <button class="nbtn" onclick="nav('blog')"><span class="ni">📝</span>Blog<span class="nbadge" id="nb-b">0</span></button>
+    <button class="nbtn" onclick="nav('reel')"><span class="ni">🎬</span>Reel Script<span class="nbadge" id="nb-r">0</span></button>
+    <button class="nbtn" onclick="nav('linkedin')"><span class="ni">💼</span>LinkedIn</button>
+    <div class="sdiv"></div>
+    <span class="slabel">Manage</span>
+    <button class="nbtn" onclick="nav('history')"><span class="ni">🗂</span>History<span class="nbadge" id="nb-h">0</span></button>
+
+    <!-- THEME INFO -->
+    <div class="sdiv"></div>
+    <div style="padding:0 10px;">
+      <div class="theme-badge">
+        <div class="theme-badge-label">Blog Design Theme</div>
+        <div class="theme-badge-name">Editorial Warm</div>
+        <div class="theme-badge-note">Cream · Serif · Structured<br/>Updates every ~10 posts</div>
+      </div>
+    </div>
+  </div>
+  <div class="sidebar-bottom">
+    <label class="clabel">GitHub Repo</label>
+    <input class="cinput" id="cfg-gh" placeholder="username/blog" oninput="updateDeploy()"/>
+    <label class="clabel">Your Name</label>
+    <input class="cinput" id="cfg-name" placeholder="Pranav" value="Pranav"/>
+    <label class="clabel">Your Handle</label>
+    <input class="cinput" id="cfg-handle" placeholder="@pranav" value="@pranav"/>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- ═══ CREATE ═══ -->
+  <div class="panel active" id="panel-create">
+    <div class="ph">
+      <div class="ph-title">Drop Your <em>Idea</em></div>
+      <div class="ph-sub">Raw thought or a few lines — AI generates a full editorial blog + reel + LinkedIn</div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="sn" id="sn-t" style="color:var(--orange)">0</div><div class="sl">Posts Made</div></div>
+      <div class="stat"><div class="sn" id="sn-b" style="color:var(--cyan)">0</div><div class="sl">Blogs Ready</div></div>
+      <div class="stat"><div class="sn" id="sn-r" style="color:var(--green)">0</div><div class="sl">Reel Scripts</div></div>
+      <div class="stat"><div class="sn" id="sn-l" style="color:var(--purple)">0</div><div class="sl">LinkedIn</div></div>
+    </div>
+
+    <!-- Schedule notice -->
+    <div class="schedule-notice">
+      <div class="sn-icon">📅</div>
+      <div>
+        <div class="sn-title">Smart Publish Schedule</div>
+        <div class="sn-text">Blog: publish every 7–10 days (quality over quantity). Reels: daily. LinkedIn: weekly best pick only. This app generates everything — you control when to publish.</div>
+      </div>
+    </div>
+
+    <div class="ibox">
+      <div class="ihead">
+        <div class="ihead-l">Today's Idea</div>
+        <span id="ccnt" style="font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--dim);">0 chars</span>
+      </div>
+      <textarea class="idea" id="ideaInput" placeholder="Examples:
+• 'At Deutsche Bank, we had to choose between RAG and fine-tuning. RAG won — here's the exact decision process...'
+• 'Docker vs VMs — the one analogy that finally made it click for me'
+• 'My first year as an engineer: 5 things nobody warned me about'
+• 'LangGraph confused me until I understood this one core concept...'" rows="5"></textarea>
+      <div class="ifoot">
+        <div class="ihint">More context = richer, more specific content</div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-ghost btn-sm" onclick="loadEx()">💡 Example</button>
+          <button class="btn btn-primary" id="genBtn" onclick="generateAll()">⚡ Generate Everything</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings">
+      <div class="sg">
+        <label>Audience</label>
+        <select class="sel" id="set-aud">
+          <option value="college students learning to code">College Students</option>
+          <option value="junior software developers">Junior Developers</option>
+          <option value="tech professionals">Tech Professionals</option>
+          <option value="non-technical people curious about AI">General / Curious</option>
+        </select>
+      </div>
+      <div class="sg">
+        <label>Post Type</label>
+        <select class="sel" id="set-type">
+          <option value="technical deep dive">Technical Deep Dive</option>
+          <option value="beginner explainer">Beginner Explainer</option>
+          <option value="career insight from industry">Career Insight</option>
+          <option value="project build story">Build Log / Story</option>
+          <option value="comparison guide">Comparison Post</option>
+        </select>
+      </div>
+      <div class="sg">
+        <label>LinkedIn This Week?</label>
+        <select class="sel" id="set-li">
+          <option value="no">No — Reels/YouTube only</option>
+          <option value="yes">Yes — Weekly best pick</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="loader" id="loader">
+      <div class="spinner"></div>
+      <div class="lsteps">
+        <div class="ls" id="ls1">Reading your idea...</div>
+        <div class="ls" id="ls2">Writing editorial blog post...</div>
+        <div class="ls" id="ls3">Applying warm serif design...</div>
+        <div class="ls" id="ls4">Crafting reel script...</div>
+        <div class="ls" id="ls5">Writing LinkedIn post...</div>
+        <div class="ls" id="ls6">Preparing deploy commands...</div>
+      </div>
+    </div>
+
+    <div class="sbanner" id="sbanner">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:1.1rem">✅</span>
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;">Done! All content ready.</div>
+          <div style="font-size:0.75rem;color:var(--muted);">Blog in Editorial Warm theme · Reel script · LinkedIn post</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:7px;flex-wrap:wrap;">
+        <button class="btn btn-ghost btn-sm" onclick="nav('blog')">Blog ›</button>
+        <button class="btn btn-ghost btn-sm" onclick="nav('reel')">Reel ›</button>
+        <button class="btn btn-ghost btn-sm" onclick="nav('linkedin')">LinkedIn ›</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ BLOG ═══ -->
+  <div class="panel" id="panel-blog">
+    <div class="ph">
+      <div class="ph-title">Blog <em>Preview</em></div>
+      <div class="ph-sub">Editorial Warm theme — cream background, serif fonts, structured layout. Publish every 7–10 days.</div>
+    </div>
+    <div id="b-empty" class="empty"><div class="ei">📝</div><h3>No blog yet</h3><p>Generate from Create tab</p></div>
+    <div id="b-content" style="display:none">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+        <div style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.25);border-radius:3px;padding:6px 12px;font-family:'DM Mono',monospace;font-size:0.65rem;color:#c9a84c;letter-spacing:0.08em;">◈ EDITORIAL WARM THEME</div>
+        <div style="font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--muted);" id="b-date"></div>
+      </div>
+      <div class="otabs">
+        <button class="otab active" onclick="bTab('preview',this)">Preview</button>
+        <button class="otab" onclick="bTab('source',this)">HTML Source</button>
+        <button class="otab" onclick="bTab('deploy',this)">Deploy to GitHub</button>
+      </div>
+      <div class="owrap">
+        <div class="otbar">
+          <button class="btn btn-ghost btn-xs" onclick="cpBlog()">📋 Copy HTML</button>
+          <button class="btn btn-green btn-xs" onclick="dlBlog()">⬇ Download</button>
+          <div class="sp2"></div>
+          <span style="font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--muted);" id="b-fname">post.html</span>
+        </div>
+        <div id="bv-preview"><iframe class="preview" id="blogFrame"></iframe></div>
+        <div id="bv-source" style="display:none"><div class="codeview" id="blogSrc"></div></div>
+        <div id="bv-deploy" style="display:none">
+          <div class="depwrap">
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:4px;">Deploy to GitHub Pages</div>
+            <div style="font-size:0.8rem;color:var(--muted);margin-bottom:20px;">First time: 5 min setup. After that: 1 command per post.</div>
+            <div id="repo-warn" style="display:none;background:rgba(255,196,60,0.06);border:1px solid rgba(255,196,60,0.2);border-radius:3px;padding:10px 14px;margin-bottom:14px;font-size:0.78rem;color:var(--yellow);">⚠ Enter your GitHub repo in sidebar first</div>
+            <div class="dep-steps">
+              <div class="dstep"><div class="dnum">1</div><div><h4>Create GitHub repo (one time)</h4><p>github.com/new → name: blog → Public → No README</p></div></div>
+              <div class="dstep"><div class="dnum">2</div><div><h4>Clone & init (one time)</h4><div class="cmd"><span id="dc1">git clone https://github.com/USER/blog && cd blog && mkdir posts</span><button class="btn btn-xs btn-ghost" onclick="cp('dc1')">Copy</button></div></div></div>
+              <div class="dstep"><div class="dnum">3</div><div><h4>Move your downloaded HTML to posts/</h4><div class="cmd"><span id="dc2">mv ~/Downloads/post.html posts/</span><button class="btn btn-xs btn-ghost" onclick="cp('dc2')">Copy</button></div></div></div>
+              <div class="dstep"><div class="dnum">4</div><div><h4>Deploy live (every time — 3 seconds)</h4><div class="cmd"><span id="dc3">git add . && git commit -m "new post" && git push</span><button class="btn btn-xs btn-ghost" onclick="cp('dc3')">Copy</button></div></div></div>
+              <div class="dstep"><div class="dnum">5</div><div><h4>Live URL</h4><div class="cmd"><span id="dc4">https://username.github.io/blog/posts/post.html</span><button class="btn btn-xs btn-ghost" onclick="cp('dc4')">Copy</button></div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ REEL ═══ -->
+  <div class="panel" id="panel-reel">
+    <div class="ph">
+      <div class="ph-title">Reel <em>Script</em></div>
+      <div class="ph-sub">Scene-by-scene. OBS screen record → CapCut auto-captions → Post. No face needed.</div>
+    </div>
+    <div id="r-empty" class="empty"><div class="ei">🎬</div><h3>No reel yet</h3><p>Generate from Create tab</p></div>
+    <div id="r-content" style="display:none">
+      <div class="rtip">💡 <strong>Workflow:</strong> OBS → Screen record while reading script → CapCut → Auto Captions → Export 1080×1920 → Post daily to Insta + YouTube Shorts</div>
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+        <button class="btn btn-ghost btn-sm" onclick="cpReel()">📋 Copy Script</button>
+        <button class="btn btn-cyan btn-sm" onclick="cpCap()">📱 Copy Caption</button>
+      </div>
+      <div id="reelScenes"></div>
+      <div class="capbox"><div class="cap-l">Instagram Caption + Hashtags</div><div id="reelCap" style="font-size:0.85rem;line-height:1.7;white-space:pre-wrap;"></div></div>
+    </div>
+  </div>
+
+  <!-- ═══ LINKEDIN ═══ -->
+  <div class="panel" id="panel-linkedin">
+    <div class="ph">
+      <div class="ph-title">LinkedIn <em>Post</em></div>
+      <div class="ph-sub">Weekly best only. 1 post per week. Monday 8am. High signal, professional.</div>
+    </div>
+    <div id="li-empty" class="empty"><div class="ei">💼</div><h3>No LinkedIn post</h3><p>Toggle LinkedIn to Yes in Create</p></div>
+    <div id="li-skip" style="display:none" class="empty"><div class="ei">⏭</div><h3>Skipped</h3><p>Set LinkedIn toggle to Yes and regenerate</p></div>
+    <div id="li-content" style="display:none">
+      <div class="li-scores">
+        <div class="liscore"><div class="lisn" id="li-hook" style="color:var(--orange)">–</div><div class="lisl">Hook</div></div>
+        <div class="liscore"><div class="lisn" id="li-words" style="color:var(--cyan)">–</div><div class="lisl">Words</div></div>
+        <div class="liscore"><div class="lisn" id="li-tags" style="color:var(--green)">–</div><div class="lisl">Hashtags</div></div>
+      </div>
+      <div class="owrap">
+        <div class="otbar"><button class="btn btn-purple btn-xs" onclick="cpLI()">📋 Copy Post</button><div class="sp2"></div><span style="font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--muted);">Post Monday 8am</span></div>
+        <div class="textview" id="liText"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ HISTORY ═══ -->
+  <div class="panel" id="panel-history">
+    <div class="ph"><div class="ph-title">Post <em>History</em></div><div class="ph-sub">All generated content this session</div></div>
+    <div id="h-empty" class="empty"><div class="ei">🗂</div><h3>Nothing yet</h3><p>Start generating</p></div>
+    <div class="hlist" id="hlist"></div>
+  </div>
+
+</main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════ STATE ══════════════
+const S = { posts:[], cur:{ blog:'',reel:'',li:'',title:'',slug:'',doLI:false } };
+
+// ══════════════ NAV ══════════════
+function nav(id) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nbtn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  document.querySelectorAll('.nbtn').forEach(b=>{
+    const t=b.textContent.trim().toLowerCase();
+    if((id==='create'&&t.startsWith('creat'))||(id==='blog'&&t.startsWith('blog'))||(id==='reel'&&t.startsWith('reel'))||(id==='linkedin'&&t.startsWith('linked'))||(id==='history'&&t.startsWith('hist')))b.classList.add('active');
+  });
+  if(id==='history')renderHistory();
+}
+
+// ══════════════ EXAMPLE ══════════════
+const EXAMPLES=[
+  "At Deutsche Bank, we had a key architecture decision: RAG pipeline vs fine-tuning the LLM for our internal document QA bot. Documents update weekly, so retraining would be expensive and slow. We chose LangChain + Chroma (RAG). 30% faster than keyword search. I want to break down this decision tree for CS students entering AI development.",
+  "I spent 2 hours debugging a Spring Boot microservice where a Feign client was silently swallowing exceptions in a distributed trace. The fix was one annotation. The lesson about distributed system failure modes was massive. Perfect for backend dev beginners.",
+  "Docker still trips up most CS graduates — they think it's a virtual machine. It's not. The analogy that finally made it click: Docker ships the recipe + ingredients. A VM ships the whole kitchen.",
+];
+function loadEx(){
+  document.getElementById('ideaInput').value=EXAMPLES[Math.floor(Math.random()*EXAMPLES.length)];
+  updateCC();
+}
+document.getElementById('ideaInput').addEventListener('input',updateCC);
+function updateCC(){document.getElementById('ccnt').textContent=document.getElementById('ideaInput').value.length+' chars';}
+
+// ══════════════ THE BLOG PROMPT — EDITORIAL WARM THEME (LOCKED) ══════════════
+// This is the fixed theme based on the reference design: cream/warm, serif fonts,
+// structured editorial layout, grain texture, numbered steps, stat boxes.
+// Updated every ~10 posts by changing the LAYOUT_VARIANT below.
+
+const LAYOUT_VARIANTS = [
+  { name:'Standard Editorial', layout:'intro-block with stat box on right, numbered steps with vertical connector line, template cards with dark header' },
+  { name:'Two Column Feature', layout:'full-width intro quote block, then 2-column content grid, comparison table with cream cards' },
+  { name:'Magazine Spread', layout:'large serif pullquote hero, then alternating text-and-card rows, pro tip strip at bottom' },
+  { name:'Numbered Playbook', layout:'numbered sections as cards with accent left border, checklist items, metrics row at top' },
+  { name:'Deep Dive Report', layout:'table of contents sidebar style, content in clear sections, code blocks with terminal header' },
+];
+
+function pickVariant(postCount) {
+  return LAYOUT_VARIANTS[Math.floor(postCount / 1) % LAYOUT_VARIANTS.length];
+}
+
+function blogPrompt(idea, audience, type, author, handle, variant) {
+  return `You are a world-class editorial blog designer. Create a beautiful, complete HTML blog post.
+
+AUTHOR: ${author} (${handle}) — Full Stack & GenAI Engineer, HCLTech, working on Deutsche Bank project.
+
+IDEA: ${idea}
+
+AUDIENCE: ${audience}
+TYPE: ${type}
+
+═══════════════════════════════════════════════
+DESIGN SYSTEM TO USE — "Editorial Warm" Theme
+(This is a LOCKED design system. Follow it exactly.)
+═══════════════════════════════════════════════
+
+COLOR PALETTE:
+:root {
+  --ink: #0d0d0d;
+  --cream: #f5f0e8;
+  --accent: #e8451a;
+  --gold: #c9a84c;
+  --muted: #7a7060;
+  --card: #fff8ef;
+  --border: #d4c9b0;
+}
+
+TYPOGRAPHY:
+- Headings: 'DM Serif Display' from Google Fonts (elegant, literary)
+- UI / Labels: 'Syne' from Google Fonts (geometric, bold)
+- Mono / Code: 'DM Mono' from Google Fonts
+
+BACKGROUND: var(--cream) — warm off-white
+BODY TEXT: var(--ink) — near black
+
+MANDATORY DESIGN ELEMENTS:
+1. Grain texture overlay (body::before with SVG fractalNoise, opacity 0.5)
+2. Header: border-top 3px solid var(--ink), DM Serif Display title with italic em in accent color
+3. Author label area: DM Mono byline + handle in accent color (use ${handle})
+4. Stats/metrics box: border 1px solid var(--border), background var(--card), large serif numbers in accent
+5. Dark intro block: background var(--ink), cream text, gold subheading
+6. Content sections: numbered with accent-colored square badges
+7. Template/code cards: dark header bar with colored dots (macOS style), DM Mono body
+8. Pro Tip strip: full-width accent background, vertical 'PRO TIP' badge on left, serif quote text
+9. Footer: DM Mono, muted left, accent handle right
+
+LAYOUT VARIANT FOR THIS POST: ${variant.name}
+Layout description: ${variant.layout}
+
+ANIMATION: fadeUp keyframe on key sections (0.6s ease, staggered delays)
+
+CONTENT REQUIREMENTS:
+- Title tag: "[Descriptive Post Title] — ByteBytes"
+- Brand in header: "ByteBytes"
+- Author byline: "${author}" and handle "${handle}"
+- Minimum 700 words of genuine, useful content
+- 2-3 numbered sections with real insights
+- Include a code block if topic is technical (styled with dark header + DM Mono)
+- Include a stats/metrics row (3 meaningful numbers from the topic)
+- Include a "Pro Tip" callout at the bottom
+- Tone: Real engineer voice. Like explaining to a smart junior colleague. Not corporate.
+- Mobile responsive (max-width 860px centered, responsive grid breakpoints at 640px)
+- Scroll progress bar in accent color at top of page
+
+Return ONLY the complete HTML. No markdown. No explanation. Start with <!DOCTYPE html>`;
+}
+
+function reelPrompt(idea, audience) {
+  const STYLES = [
+    'Hook-reveal: start with a bold surprising statement, quick insight reveals, energetic pacing',
+    'Story arc: "I was stuck until..." format — relatable frustration → aha moment → takeaway',
+    'Top-3 list: numbered reveals on screen, punchy and fast, each 8-10 seconds',
+    '"Unpopular opinion" format: controversial opening, build the case, satisfying payoff',
+    'Before/After contrast: show the wrong way dramatically, then the right way',
+    'Live walkthrough: show actual code/screen while explaining step by step',
+  ];
+  const style = STYLES[Math.floor(Math.random()*STYLES.length)];
+  return `Create a 45-60 second Instagram/YouTube Shorts reel script.
+
+IDEA: ${idea}
+AUDIENCE: ${audience}
+REEL STYLE: ${style}
+
+Return ONLY this JSON (no markdown, no backticks):
+{
+  "style": "style name",
+  "hook": "First 3 seconds — one bold sentence to stop scrolling",
+  "scenes": [
+    { "scene": 1, "timestamp": "0-8s", "voiceover": "Exact words to say", "visual": "What to show on screen", "overlay": "Bold text on screen" }
+  ],
+  "cta": "Final call to action line",
+  "caption": "Instagram caption under 150 chars",
+  "hashtags": ["#tag1","#tag2","#tag3","#tag4","#tag5"]
+}
+Max 6 scenes.`;
+}
+
+function liPrompt(idea, author) {
+  const ANGLES = [
+    'Lead with a counterintuitive insight — something surprising most people get wrong',
+    'Lead with a specific number or metric that makes people stop scrolling',
+    'Lead with a mistake made and what it cost + what it taught',
+    'Lead with the one sentence that changed how you think about this topic',
+  ];
+  const angle = ANGLES[Math.floor(Math.random()*ANGLES.length)];
+  return `Write a LinkedIn post for ${author}, Full Stack & GenAI Engineer at HCLTech (Deutsche Bank project).
+
+TOPIC: ${idea}
+ANGLE: ${angle}
+
+Rules:
+- First line: bold insight, no emoji, no "Excited to share" — ${angle}
+- 4-6 short paragraphs, 1-3 lines each (white space matters on LinkedIn)
+- One specific technical detail or number
+- End with a genuine question for discussion
+- 3-5 hashtags on final line
+- 180-250 words
+- Sound like a real engineer, not a LinkedIn influencer
+
+Return post text only. No preamble.`;
+}
+
+// ══════════════ API ══════════════
+async function ai(prompt) {
+  const r = await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:4096, messages:[{role:'user',content:prompt}] })
+  });
+  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||'API error '+r.status);}
+  const d=await r.json();
+  return d.content.map(b=>b.text||'').join('');
+}
+
+// ══════════════ GENERATE ══════════════
+async function generateAll() {
+  const idea = document.getElementById('ideaInput').value.trim();
+  if(!idea){toast('Enter your idea first','err');return;}
+  const aud = document.getElementById('set-aud').value;
+  const type = document.getElementById('set-type').value;
+  const doLI = document.getElementById('set-li').value==='yes';
+  const author = document.getElementById('cfg-name').value||'Pranav';
+  const handle = document.getElementById('cfg-handle').value||'@pranav';
+  const variant = pickVariant(S.posts.length);
+
+  setLoad(true); setSteps(0);
+  document.getElementById('sbanner').className='sbanner';
+  updatePills(1);
+
+  try {
+    setSteps(1); await sleep(300);
+    setSteps(2);
+    const blogHTML = await ai(blogPrompt(idea, aud, type, author, handle, variant));
+    setSteps(3); await sleep(200);
+    updatePills(2);
+
+    setSteps(4);
+    const reelRaw = await ai(reelPrompt(idea, aud));
+    updatePills(3);
+
+    setSteps(5);
+    let liPost=null;
+    if(doLI){liPost=await ai(liPrompt(idea, author));}
+    updatePills(4);
+
+    setSteps(6); await sleep(300);
+
+    const tm=blogHTML.match(/<title>(.*?)<\/title>/i);
+    const title=(tm?tm[1]:'New Post').replace(/[–—].*/, '').trim();
+    const slug=title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,40);
+
+    S.cur={blog:blogHTML,reel:reelRaw,li:liPost,title,slug,doLI,variant:variant.name};
+    S.posts.unshift({id:Date.now(),title,slug,idea:idea.slice(0,100),date:new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}),variant:variant.name,...S.cur});
+
+    updateDeploy();
+    renderBlog(blogHTML,slug);
+    renderReel(reelRaw);
+    renderLI(liPost,doLI);
+    updateStats();
+    setLoad(false);
+    document.getElementById('sbanner').className='sbanner on';
+    updatePills(5);
+    toast('✅ Done! Editorial Warm theme applied','ok');
+
+  } catch(e) {
+    setLoad(false);
+    toast('Error: '+e.message,'err');
+    console.error(e);
+  }
+}
+
+// ══════════════ RENDER BLOG ══════════════
+function renderBlog(html, slug) {
+  document.getElementById('b-empty').style.display='none';
+  document.getElementById('b-content').style.display='block';
+  document.getElementById('blogFrame').srcdoc=html;
+  document.getElementById('blogSrc').textContent=html;
+  document.getElementById('b-fname').textContent=slug+'.html';
+  document.getElementById('b-date').textContent=new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
+}
+function bTab(t,btn){
+  document.querySelectorAll('.otab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('bv-preview').style.display=t==='preview'?'block':'none';
+  document.getElementById('bv-source').style.display=t==='source'?'block':'none';
+  document.getElementById('bv-deploy').style.display=t==='deploy'?'block':'none';
+  if(t==='deploy'){const r=document.getElementById('cfg-gh').value.trim();document.getElementById('repo-warn').style.display=r?'none':'block';}
+}
+
+// ══════════════ RENDER REEL ══════════════
+function renderReel(raw) {
+  document.getElementById('r-empty').style.display='none';
+  document.getElementById('r-content').style.display='block';
+  let d;
+  try{d=JSON.parse(raw.replace(/```json|```/g,'').trim());}
+  catch(e){document.getElementById('reelScenes').innerHTML=`<div class="codeview">${raw}</div>`;return;}
+  const el=document.getElementById('reelScenes');
+  el.innerHTML='';
+  if(d.style){const sb=document.createElement('div');sb.style.cssText='font-family:"DM Mono",monospace;font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--purple);background:rgba(176,108,255,0.08);border:1px solid rgba(176,108,255,0.2);padding:5px 12px;border-radius:20px;display:inline-block;margin-bottom:12px;';sb.textContent='🎬 Style: '+d.style;el.appendChild(sb);}
+  const hd=document.createElement('div');hd.className='reel-hook';hd.innerHTML=`<div class="rh-label">HOOK — Stop The Scroll (0–3s)</div><div class="rh-text">"${d.hook}"</div>`;el.appendChild(hd);
+  (d.scenes||[]).forEach(s=>{const sd=document.createElement('div');sd.className='rscene';sd.innerHTML=`<div class="rs-head">Scene ${s.scene} · ${s.timestamp}</div><div class="rs-vo">${s.voiceover}</div>${s.overlay?`<div style="font-size:0.75rem;color:var(--yellow);margin:4px 0;">📌 On screen: "${s.overlay}"</div>`:''}<div class="rs-vis">📹 ${s.visual}</div>`;el.appendChild(sd);});
+  const cd=document.createElement('div');cd.className='rcta';cd.innerHTML=`<div class="rcta-l">CTA — Final Line</div><div style="font-weight:700;font-size:0.9rem;">"${d.cta}"</div>`;el.appendChild(cd);
+  document.getElementById('reelCap').textContent=[d.caption,...(d.hashtags||[])].filter(Boolean).join('\n');
+  S.cur.reelParsed=d;
+}
+
+// ══════════════ RENDER LINKEDIN ══════════════
+function renderLI(post,doLI) {
+  document.getElementById('li-empty').style.display='none';
+  document.getElementById('li-skip').style.display='none';
+  document.getElementById('li-content').style.display='none';
+  if(!doLI){document.getElementById('li-skip').style.display='block';return;}
+  document.getElementById('li-content').style.display='block';
+  document.getElementById('liText').textContent=post||'';
+  const words=(post||'').split(/\s+/).length;
+  const tags=((post||'').match(/#\w+/g)||[]).length;
+  const fl=(post||'').split('\n')[0];
+  document.getElementById('li-hook').textContent=fl.length>20&&fl.length<120?'🔥':'✓';
+  document.getElementById('li-words').textContent=words;
+  document.getElementById('li-tags').textContent=tags;
+}
+
+// ══════════════ HISTORY ══════════════
+function renderHistory() {
+  const list=document.getElementById('hlist');
+  const empty=document.getElementById('h-empty');
+  if(!S.posts.length){empty.style.display='block';list.style.display='none';return;}
+  empty.style.display='none';list.style.display='flex';
+  list.innerHTML=S.posts.map(p=>`
+    <div class="hcard ${p.doLI?'lipick':''}" onclick="loadPost(${p.id})">
+      <div>
+        <div class="htitle">${p.title}</div>
+        <div class="hmeta">
+          <span class="hdate">${p.date}</span>
+          ${p.variant?`<span style="font-family:'DM Mono',monospace;font-size:0.58rem;color:#c9a84c;">◈ ${p.variant}</span>`:''}
+          <span class="chip chip-b">Blog</span><span class="chip chip-r">Reel</span>
+          ${p.doLI?'<span class="chip chip-l">LinkedIn</span>':''}
+        </div>
+        <div class="hidea">${p.idea}${p.idea.length>=100?'...':''}</div>
+      </div>
+      <div class="hactions">
+        <button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();loadPost(${p.id});nav('blog')">Blog</button>
+        <button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();loadPost(${p.id});nav('reel')">Reel</button>
+        ${p.doLI?`<button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();loadPost(${p.id});nav('linkedin')">LI</button>`:''}
+      </div>
+    </div>`).join('');
+}
+function loadPost(id){const p=S.posts.find(x=>x.id===id);if(!p)return;S.cur={...p};renderBlog(p.blog,p.slug);renderReel(p.reel);renderLI(p.li,p.doLI);}
+
+// ══════════════ DEPLOY ══════════════
+function updateDeploy() {
+  const repo=document.getElementById('cfg-gh').value.trim()||'username/blog';
+  const [u,r]=repo.includes('/')?repo.split('/'):['username','blog'];
+  const slug=S.cur.slug||'post';
+  document.getElementById('dc1').textContent=`git clone https://github.com/${u}/${r} && cd ${r} && mkdir posts`;
+  document.getElementById('dc2').textContent=`mv ~/Downloads/${slug}.html posts/`;
+  document.getElementById('dc3').textContent=`git add . && git commit -m "post: ${slug}" && git push origin main`;
+  document.getElementById('dc4').textContent=`https://${u}.github.io/${r}/posts/${slug}.html`;
+}
+
+// ══════════════ STEP PILLS ══════════════
+function updatePills(a){
+  ['sp1','sp2','sp3','sp4','sp5'].forEach((id,i)=>{
+    const el=document.getElementById(id);
+    el.className=i+1<a?'sp done':i+1===a?'sp active':'sp';
+  });
+}
+
+// ══════════════ STATS ══════════════
+function updateStats(){
+  const n=S.posts.length,li=S.posts.filter(p=>p.doLI).length;
+  document.getElementById('sn-t').textContent=n;
+  document.getElementById('sn-b').textContent=n;
+  document.getElementById('sn-r').textContent=n;
+  document.getElementById('sn-l').textContent=li;
+  document.getElementById('nb-h').textContent=n;
+  document.getElementById('nb-b').textContent=n;
+  document.getElementById('nb-r').textContent=n;
+}
+
+// ══════════════ COPY / DOWNLOAD ══════════════
+function cpBlog(){navigator.clipboard.writeText(S.cur.blog||'').then(()=>toast('HTML copied!'));}
+function dlBlog(){if(!S.cur.blog)return;const a=document.createElement('a');a.href='data:text/html;charset=utf-8,'+encodeURIComponent(S.cur.blog);a.download=(S.cur.slug||'post')+'.html';a.click();toast('Downloaded!','ok');}
+function cpReel(){navigator.clipboard.writeText(document.getElementById('reelScenes').innerText||'').then(()=>toast('Script copied!'));}
+function cpCap(){navigator.clipboard.writeText(document.getElementById('reelCap').textContent||'').then(()=>toast('Caption copied!'));}
+function cpLI(){navigator.clipboard.writeText(document.getElementById('liText').textContent||'').then(()=>toast('Post copied!'));}
+function cp(id){navigator.clipboard.writeText(document.getElementById(id).textContent||'').then(()=>toast('Copied!'));}
+
+// ══════════════ LOADER ══════════════
+function setLoad(on){
+  document.getElementById('loader').className=on?'loader on':'loader';
+  const btn=document.getElementById('genBtn');btn.disabled=on;
+  btn.textContent=on?'⏳ Generating...':'⚡ Generate Everything';
+}
+function setSteps(a){for(let i=1;i<=6;i++){const e=document.getElementById('ls'+i);e.className=i<a?'ls ok':i===a?'ls on':'ls';}}
+
+// ══════════════ TOAST ══════════════
+function toast(msg,type='ok'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast on '+type;setTimeout(()=>t.className='toast',2800);}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+// Init
+updateDeploy();
+document.getElementById('cfg-gh').addEventListener('input',updateDeploy);
+</script>
+</body>
+</html>
