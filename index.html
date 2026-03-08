@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ByteBytes — by Pranav</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{--ink:#0d0d0d;--cream:#f5f0e8;--accent:#e8451a;--gold:#c9a84c;--muted:#7a7060;--card:#fff8ef;--border:#d4c9b0;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--cream);color:var(--ink);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:0.5;}
+.page{max-width:900px;margin:0 auto;padding:0 32px 80px;}
+
+nav{border-bottom:1px solid var(--border);padding:20px 0;display:flex;justify-content:space-between;align-items:center;}
+.logo{font-family:'DM Serif Display',serif;font-size:1.5rem;letter-spacing:-0.5px;}
+.logo em{color:var(--accent);font-style:italic;}
+.nav-right{display:flex;align-items:center;gap:20px;}
+.nav-right a{font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color 0.2s;}
+.nav-right a:hover{color:var(--accent);}
+.nav-handle{font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--accent);}
+
+.hero{padding:56px 0 48px;border-bottom:1px solid var(--border);display:grid;grid-template-columns:3fr 2fr;gap:40px;align-items:end;animation:fadeUp 0.6s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.hero-eyebrow{font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+.hero h1{font-family:'DM Serif Display',serif;font-size:clamp(2.2rem,5vw,3.8rem);line-height:1.05;letter-spacing:-0.02em;margin-bottom:14px;}
+.hero h1 em{font-style:italic;color:var(--accent);}
+.hero-sub{font-size:0.9rem;color:var(--muted);line-height:1.7;max-width:400px;}
+.hero-stats{display:flex;flex-direction:column;gap:16px;align-items:flex-end;}
+.hstat .num{font-family:'DM Serif Display',serif;font-size:2.6rem;color:var(--accent);line-height:1;text-align:right;}
+.hstat .lbl{font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);text-align:right;}
+.hstat-div{width:1px;height:32px;background:var(--border);margin-left:auto;}
+
+.sec-label{font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);padding:28px 0 16px;border-bottom:1px solid var(--border);margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;}
+.sec-count{color:var(--accent);}
+
+.featured{background:var(--ink);color:var(--cream);padding:36px 40px;margin-bottom:16px;display:grid;grid-template-columns:2fr 1fr;gap:32px;align-items:center;text-decoration:none;transition:opacity 0.2s;animation:fadeUp 0.5s 0.1s ease both;}
+.featured:hover{opacity:0.9;}
+.feat-tag{font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
+.feat-title{font-family:'DM Serif Display',serif;font-size:clamp(1.4rem,3.5vw,2rem);line-height:1.15;color:var(--cream);margin-bottom:10px;}
+.feat-desc{font-size:0.83rem;color:rgba(245,240,232,0.6);line-height:1.65;}
+.feat-right{text-align:right;}
+.feat-date{font-family:'DM Mono',monospace;font-size:0.62rem;color:rgba(245,240,232,0.35);margin-bottom:16px;}
+.feat-arrow{font-family:'DM Serif Display',serif;font-size:2.5rem;color:var(--accent);}
+
+.post-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.pcard{background:var(--card);border:1px solid var(--border);padding:22px;text-decoration:none;display:block;transition:border-color 0.2s,transform 0.2s;animation:fadeUp 0.5s ease both;}
+.pcard:hover{border-color:var(--accent);transform:translateY(-2px);}
+.pc-tag{font-family:'DM Mono',monospace;font-size:0.56rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.pc-tag::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--accent);flex-shrink:0;}
+.pc-title{font-family:'DM Serif Display',serif;font-size:1.1rem;line-height:1.2;color:var(--ink);margin-bottom:8px;}
+.pc-desc{font-size:0.78rem;color:var(--muted);line-height:1.6;margin-bottom:14px;}
+.pc-foot{display:flex;align-items:center;justify-content:space-between;}
+.pc-date{font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--muted);}
+.pc-read{font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--accent);letter-spacing:0.08em;text-transform:uppercase;}
+
+.pcard-wide{background:var(--card);border:1px solid var(--border);padding:20px 24px;text-decoration:none;display:grid;grid-template-columns:2fr auto;gap:20px;align-items:center;margin-bottom:12px;transition:border-color 0.2s;animation:fadeUp 0.5s ease both;}
+.pcard-wide:hover{border-color:var(--accent);}
+
+.empty-wrap{border:1px dashed var(--border);padding:56px;text-align:center;}
+.empty-wrap .ei{font-size:2rem;opacity:0.3;margin-bottom:12px;}
+.empty-wrap h3{font-family:'DM Serif Display',serif;font-size:1.3rem;color:var(--muted);margin-bottom:8px;}
+.empty-wrap p{font-size:0.8rem;color:var(--muted);line-height:1.7;max-width:340px;margin:0 auto 6px;}
+.empty-wrap code{font-family:'DM Mono',monospace;font-size:0.7rem;background:rgba(0,0,0,0.06);padding:2px 7px;border-radius:2px;color:var(--accent);}
+
+.about{border-top:3px solid var(--ink);padding:32px 0;margin-top:48px;display:grid;grid-template-columns:auto 1fr auto;gap:24px;align-items:center;}
+.av{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--gold));display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:1.4rem;color:white;flex-shrink:0;}
+.ab-text h3{font-family:'DM Serif Display',serif;font-size:1.05rem;margin-bottom:4px;}
+.ab-text p{font-size:0.78rem;color:var(--muted);line-height:1.6;}
+.ab-links{display:flex;flex-direction:column;gap:6px;align-items:flex-end;}
+.ab-link{font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);text-decoration:none;}
+.ab-link:hover{text-decoration:underline;}
+
+footer{border-top:1px solid var(--border);padding:20px 0 0;margin-top:0;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.fl{font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--muted);}
+.fr{font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--accent);}
+
+@media(max-width:640px){
+  .page{padding:0 20px 60px;}
+  .hero{grid-template-columns:1fr;padding:36px 0 28px;}
+  .hero-stats{flex-direction:row;justify-content:flex-start;}.hstat .num,.hstat .lbl{text-align:left;}.hstat-div{width:40px;height:1px;margin:0;}
+  .featured{grid-template-columns:1fr;padding:24px;}.feat-right{display:none;}
+  .post-grid{grid-template-columns:1fr;}
+  .pcard-wide{grid-template-columns:1fr;}
+  .about{grid-template-columns:auto 1fr;}.ab-links{display:none;}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <nav>
+    <div class="logo">Byte<em>Bytes</em></div>
+    <div class="nav-right">
+      <a href="#posts">Posts</a>
+      <a href="#about">About</a>
+      <div class="nav-handle">@PranavWPDev</div>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div>
+      <div class="hero-eyebrow">GenAI · Full Stack · Career</div>
+      <h1>Real tech.<br/><em>No fluff.</em></h1>
+      <p class="hero-sub">GenAI pipelines, full stack patterns and early-career insights — from an engineer learning in public at HCLTech × Deutsche Bank.</p>
+    </div>
+    <div class="hero-stats">
+      <div class="hstat">
+        <div class="num" id="postCount">0</div>
+        <div class="lbl">Posts Published</div>
+      </div>
+      <div class="hstat-div"></div>
+      <div class="hstat">
+        <div class="num">∞</div>
+        <div class="lbl">Topics Ahead</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="posts">
+    <div class="sec-label">
+      <span>Latest Posts</span>
+      <span class="sec-count" id="secCount"></span>
+    </div>
+    <div id="postsContainer"></div>
+  </div>
+
+  <div class="about" id="about">
+    <div class="av">P</div>
+    <div class="ab-text">
+      <h3>Pranav</h3>
+      <p>Full Stack & GenAI Engineer at HCLTech, working on Deutsche Bank. Building with LangChain, FastAPI, Spring Boot, React. Learning Agentic AI in production — documenting it all here.</p>
+    </div>
+    <div class="ab-links">
+      <a class="ab-link" href="https://github.com/PranavWPDev" target="_blank">↗ GitHub</a>
+      <a class="ab-link" href="https://linkedin.com/in/pranav" target="_blank">↗ LinkedIn</a>
+      <a class="ab-link" href="https://instagram.com/pranav" target="_blank">↗ Instagram</a>
+    </div>
+  </div>
+
+  <footer>
+    <div class="fl">ByteBytes · by Pranav · <span id="yr"></span></div>
+    <div class="fr">@PranavWPDev</div>
+  </footer>
+</div>
+
+<script>
+document.getElementById('yr').textContent = new Date().getFullYear();
+
+// ╔══════════════════════════════════════════════════════════╗
+// ║  POSTS REGISTRY — edit ONLY this section                ║
+// ║                                                          ║
+// ║  Every time you publish a new post:                      ║
+// ║  1. Copy the template block below                        ║
+// ║  2. Fill in title, slug, desc, date, tag                 ║
+// ║  3. Save index.html and push to GitHub                   ║
+// ║  4. Card appears on homepage automatically               ║
+// ╚══════════════════════════════════════════════════════════╝
+
+const POSTS = [
+  {
+    title:    "RAG vs Fine-Tuning: What I Chose at Deutsche Bank",
+    slug:     "rag-vs-finetuning",   // ← filename WITHOUT .html
+    desc:     "The exact decision framework we used. Why RAG won.",
+    date:     "15 Mar 2026",
+    tag:      "GenAI · LangChain",
+    featured: true                   // ← first post = featured hero
+  },
+];
+
+// ══════════════════════════════════════════════════════════
+//  RENDERER — do not edit below this line
+// ══════════════════════════════════════════════════════════
+function render() {
+  const box   = document.getElementById('postsContainer');
+  const count = document.getElementById('postCount');
+  const sec   = document.getElementById('secCount');
+
+  count.textContent = POSTS.length;
+  sec.textContent   = POSTS.length > 0 ? POSTS.length + ' posts' : '';
+
+  if (POSTS.length === 0) {
+    box.innerHTML = `
+      <div class="empty-wrap">
+        <div class="ei">✍</div>
+        <h3>First post coming soon</h3>
+        <p>Generate a blog using Claude → download HTML → drop in <code>posts/</code> folder.</p>
+        <p>Then add one entry to the <code>POSTS</code> array in <code>index.html</code> and push.</p>
+        <p style="margin-top:12px;color:var(--accent);font-family:'DM Mono',monospace;font-size:0.72rem;">Your card appears here automatically ✦</p>
+      </div>`;
+    return;
+  }
+
+  box.innerHTML = '';
+
+  // Featured card (hero)
+  const feat = POSTS.find(p => p.featured) || POSTS[0];
+  const rest = POSTS.filter(p => p !== feat);
+
+  const fEl = document.createElement('a');
+  fEl.className = 'featured';
+  fEl.href = `posts/${feat.slug}.html`;
+  fEl.innerHTML = `
+    <div>
+      <div class="feat-tag">✦ Featured · ${feat.tag}</div>
+      <div class="feat-title">${feat.title}</div>
+      <div class="feat-desc">${feat.desc}</div>
+    </div>
+    <div class="feat-right">
+      <div class="feat-date">${feat.date}<br/>by Pranav</div>
+      <div class="feat-arrow">→</div>
+    </div>`;
+  box.appendChild(fEl);
+
+  if (!rest.length) return;
+
+  // 2-col grid (posts 2 to 5)
+  const grid = document.createElement('div');
+  grid.className = 'post-grid';
+  rest.slice(0, 4).forEach((p, i) => {
+    const c = document.createElement('a');
+    c.className = 'pcard';
+    c.href = `posts/${p.slug}.html`;
+    c.style.animationDelay = (0.08 + i * 0.06) + 's';
+    c.innerHTML = `
+      <div class="pc-tag">${p.tag}</div>
+      <div class="pc-title">${p.title}</div>
+      <div class="pc-desc">${p.desc}</div>
+      <div class="pc-foot">
+        <span class="pc-date">${p.date}</span>
+        <span class="pc-read">Read →</span>
+      </div>`;
+    grid.appendChild(c);
+  });
+  box.appendChild(grid);
+
+  // Wide cards (post 6+)
+  rest.slice(4).forEach((p, i) => {
+    const c = document.createElement('a');
+    c.className = 'pcard-wide';
+    c.href = `posts/${p.slug}.html`;
+    c.style.animationDelay = (0.25 + i * 0.05) + 's';
+    c.innerHTML = `
+      <div>
+        <div class="pc-tag">${p.tag}</div>
+        <div class="pc-title">${p.title}</div>
+        <div class="pc-desc">${p.desc}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        <div class="pc-date" style="margin-bottom:8px;">${p.date}</div>
+        <div class="pc-read">Read →</div>
+      </div>`;
+    box.appendChild(c);
+  });
+}
+
+render();
+</script>
+</body>
+</html>
